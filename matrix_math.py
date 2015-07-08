@@ -12,7 +12,7 @@ def vector_add(vector1, vector2):
     shape_vector2 = shape(vector2)
     if shape_vector1 != shape_vector2:
         raise ShapeException("Error, vector shapes are not equal so cannot add together.")
-    return [vector1[x] + vector2[x] for x in range(len(vector2))]
+    return [vector1[x] + vector2[x] for x in range(len(vector1))]
 
 
 def vector_sub(vector1, vector2):
@@ -21,23 +21,26 @@ def vector_sub(vector1, vector2):
     shape_vector2 = shape(vector2)
     if shape_vector1 != shape_vector2:
         raise ShapeException("Error, vector shapes are not equal so cannot subtract together.")
-    return [vector1[x] - vector2[x] for x in range(len(vector2))]
+    return [vector1[x] - vector2[x] for x in range(len(vector1))]
 
 
-def vector_sum(*args):
+def vector_sum(*vectors):
     """Sums up a varying number of vectors"""
     count = 0
     list_to_sum = []
     the_same = False
-    while count <= len(args) - 1:
-        list_to_sum[count] = shape(args[count])
+    while count <= len(vectors) - 1:
+        list_to_sum[count] = shape(vectors[count])
         count += 1
     while count <= len(list_to_sum) - 1:
         if list_to_sum[count] == list_to_sum[count+1]:
             the_same = True
     if not the_same:
         raise ShapeException("Error, vector shapes are not equal so cannot sum together.")
-    # TO DO - find the sum of the vectors
+    return [
+        sum([vector[i] for vector in vectors])
+        for i in range(len(vectors[0]))
+    ]
 
 
 def vector_multiply(vector1, number):
@@ -45,9 +48,10 @@ def vector_multiply(vector1, number):
     return [number * vector1[x] for x in range(len(vector1))]
 
 
-def vector_mean():
-    pass
-    # TO DO
+def vector_mean(vector1, vector2):
+    return [
+        (vector1[x] + vector2[x]) / 2 for x in range(len(vector1))
+    ]
 
 
 def dot(vector1, vector2):
@@ -64,16 +68,6 @@ def magnitude(vector):
     return math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
 
 
-def matrix_addition(matrix1, matrix2):
-    """Adds two matrices together and returns the result"""
-    return [matrix1[x] + matrix2[x] for x in range(len(matrix1))]
-
-
-def matrix_subtraction(matrix1, matrix2):
-    """Subtracts two matrices together and returns the result"""
-    return [matrix1[x] - matrix2[x] for x in range(len(matrix1))]
-
-
 def matrix_scalar_multiply(matrix, scalar):
     """Multiplies a matrix by a scalar and returns a matrix"""
     return [scalar * matrix[x] for x in range(len(matrix))]
@@ -88,18 +82,21 @@ def matrix_vector_multiply(matrix, vector):
     return [matrix[x] * vector[x] for x in range(len(vector))]
 
 
-def matrix_matrix_multiply(matrix1, matrix2):
-    """Multiplies two matrices together and returns a matrix"""
-    matrix1_col = matrix_col(matrix1, shape(matrix1))
-    matrix2_row = matrix_row(matrix2, shape(matrix2))
-    if matrix1_col != matrix2_row:
-        raise ShapeException("Error, matrix col/row shapes are not equal so cannot multiply together.")
-    return [matrix1[x] * matrix2[x] for x in range(len(matrix1))]
+# def matrix_matrix_multiply(matrix1, matrix2):
+  #  """Multiplies two matrices together and returns a matrix"""
+   # matrix1_col = matrix_col(matrix1, shape(matrix1))
+   # matrix2_row = matrix_row(matrix2, shape(matrix2))
+   # if matrix1_col != matrix2_row:
+   #     raise ShapeException("Error, matrix col/row shapes are not equal so cannot multiply together.")
+   # return [matrix1[x] * matrix2[x] for x in range(len(matrix1))]
 
 
-def shape(vector_or_matrix):
+def shape(vector):
     """Returns the size of the vector or matrix"""
-    return len(vector_or_matrix),
+    if type(vector[0]) is int:
+        return len(vector),
+    elif type(vector[0]) is list:
+        return len(vector), len(vector[0])
 
 
 def matrix_row(matrix, row):
@@ -109,7 +106,7 @@ def matrix_row(matrix, row):
 
 def matrix_col(matrix, col):
     """Returns the col from the matrix given"""
-    return [matrix[x] for x in range(len(matrix))]
+    return [row[col] for row in matrix]
 
 
 if __name__ == '__main__':
